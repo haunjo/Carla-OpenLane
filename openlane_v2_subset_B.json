@@ -1,0 +1,133 @@
+{
+  "version": "OpenLaneV2_V2.0",
+  "segment_id": "subset_B_template",
+  "meta_data": {
+    "source": "Carla_nuScenes",
+    "source_id": "template"
+  },
+  "timestamp": 0,
+  "sensor": {
+    "CAM_FRONT": {
+      "image_path": "train/00000/image/CAM_FRONT/0.jpg",
+      "extrinsic": {
+        "rotation": [
+          [0.0, 0.0, 1.0],
+          [-1.0, 0.0, 0.0],
+          [0.0, -1.0, 0.0]
+        ],
+        "translation": [0.80, 0.0, 1.60]
+      },
+      "intrinsic": {
+        "K": [
+          [1142.26, 0.0, 800.0],
+          [0.0, 1142.26, 450.0],
+          [0.0, 0.0, 1.0]
+        ],
+        "distortion": [0.0, 0.0, 0.0]
+      }
+    },
+    "CAM_FRONT_LEFT": {
+      "image_path": "train/00000/image/CAM_FRONT_LEFT/0.jpg",
+      "extrinsic": {
+        "rotation": [
+          [0.81915, 0.0, 0.57358],
+          [-0.57358, 0.0, 0.81915],
+          [0.0, -1.0, 0.0]
+        ],
+        "translation": [0.27, 0.55, 1.60]
+      },
+      "intrinsic": {
+        "K": [
+          [1142.26, 0.0, 800.0],
+          [0.0, 1142.26, 450.0],
+          [0.0, 0.0, 1.0]
+        ],
+        "distortion": [0.0, 0.0, 0.0]
+      }
+    },
+    "CAM_FRONT_RIGHT": {
+      "image_path": "train/00000/image/CAM_FRONT_RIGHT/0.jpg",
+      "extrinsic": {
+        "rotation": [
+          [-0.81915, 0.0, 0.57358],
+          [-0.57358, 0.0, -0.81915],
+          [0.0, -1.0, 0.0]
+        ],
+        "translation": [0.27, -0.55, 1.60]
+      },
+      "intrinsic": {
+        "K": [
+          [1142.26, 0.0, 800.0],
+          [0.0, 1142.26, 450.0],
+          [0.0, 0.0, 1.0]
+        ],
+        "distortion": [0.0, 0.0, 0.0]
+      }
+    },
+    "CAM_BACK": {
+      "image_path": "train/00000/image/CAM_BACK/0.jpg",
+      "extrinsic": {
+        "rotation": [
+          [0.0, 0.0, -1.0],
+          [1.0, 0.0, 0.0],
+          [0.0, -1.0, 0.0]
+        ],
+        "translation": [-2.0, 0.0, 1.60]
+      },
+      "intrinsic": {
+        "K": [
+          [560.42, 0.0, 800.0],
+          [0.0, 560.42, 450.0],
+          [0.0, 0.0, 1.0]
+        ],
+        "distortion": [0.0, 0.0, 0.0]
+      }
+    },
+    "CAM_BACK_LEFT": {
+      "image_path": "train/00000/image/CAM_BACK_LEFT/0.jpg",
+      "extrinsic": {
+        "rotation": [
+          [0.93969, 0.0, -0.34202],
+          [0.34202, 0.0, 0.93969],
+          [0.0, -1.0, 0.0]
+        ],
+        "translation": [-0.32, 0.55, 1.60]
+      },
+      "intrinsic": {
+        "K": [
+          [1142.26, 0.0, 800.0],
+          [0.0, 1142.26, 450.0],
+          [0.0, 0.0, 1.0]
+        ],
+        "distortion": [0.0, 0.0, 0.0]
+      }
+    },
+    "CAM_BACK_RIGHT": {
+      "image_path": "train/00000/image/CAM_BACK_RIGHT/0.jpg",
+      "extrinsic": {
+        "rotation": [
+          [-0.93969, 0.0, -0.34202],
+          [0.34202, 0.0, -0.93969],
+          [0.0, -1.0, 0.0]
+        ],
+        "translation": [-0.32, -0.55, 1.60]
+      },
+      "intrinsic": {
+        "K": [
+          [1142.26, 0.0, 800.0],
+          [0.0, 1142.26, 450.0],
+          [0.0, 0.0, 1.0]
+        ],
+        "distortion": [0.0, 0.0, 0.0]
+      }
+    }
+  },
+  "annotation": {
+    "traffic_element": []
+  },
+  "pose": {
+    "rotation": [[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]],
+    "translation": [0.0, 0.0, 0.0],
+    "heading": 0.0
+  }
+}
