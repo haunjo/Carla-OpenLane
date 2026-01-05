@@ -1,0 +1,4 @@
+LaneSegNet/tools/scripts/
+LaneSegNet/*/__pycache__/
+LaneSegNet/*/*.pyc
+LaneSegNet/*/*$py.class
