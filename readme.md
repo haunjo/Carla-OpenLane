@@ -109,3 +109,17 @@ cd LaneSegNet/
 
 ./tools/dist_test 1 --show
 ```
+
+## Git 협업 방법
+
+main branch : 공동 작업 공간
+
+개인 작업 공간 만드는 방법
+
+git checkout -b bonghun
+
+브랜치 새로 생성됨
+
+git commit -a -m " 변경 내용을 텍스트로 정리 "
+
+git push origin bonghun
