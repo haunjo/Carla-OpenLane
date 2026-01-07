@@ -123,3 +123,111 @@ git checkout -b bonghun
 git commit -a -m " 변경 내용을 텍스트로 정리 "
 
 git push origin bonghun
+
+
+## 01.07 meeting
+
+1. 깃허브 협업 논의
+2. Carla-OpenLane 단점 분석
+   2.1. 데이터셋 볼륨 : 보통은 (합성데이터 >>> 실제데이터) Sim2Real 을 한다는 거 자체가 대규모 합성 데이터에서 학습한 모델에 적은 실제 데이터를 넣으면서도 성능을 강화하는 기술
+   2.2. Method 의 성능 : 데이터 증강으로 인한 성능 개선은 확실하게 증명. 근데 Text-guided domain adaptation을 하는 method 가 많이 부족함. 성능 개선이 안됨  
+3. 봉훈님 to-do
+   3.1. 데이터셋 볼륨 키우는 접근법 세우기. data_capture 코드를 분석하면서 겸사겸사 데이터셋 볼륨을 키워보기(날씨, 지역, 시간, 교통량)
+   3.2. 데이터 주석 추가하기. carla-openlane 에는 신호등만 주석이 되어 있음. 이 주석을 노면 표시, 속도 제한 표지판 등으로 확장하고자 함(하운 먼저).
+   3.3. 자유롭게 봉훈님 연구하시면서 좋은 데이터셋 증강 방법이 있으면 의논해주세요
+4. 하운님 to-do
+   4.1. Carla-OpenLane 의 모델 한계를 분석해서 정리 & 개선 방향을 related works에서 고민
+   4.2. Overleaf 에서 CVPR format으로 되어있으니까 이걸 ECCV format 으로 고치기
+
+합성데이터에서 (RGB 랑 Depth 를 같이 활용해서 학습시키면 => supervision) => 얘는 되게 똑똑함
+실제데이터에서는 (RGB만 정답 레이블이 있고 Depth는 없음 => weakly supervsion , unsupervision) unsupervised domain adaptation 기법 Default settings (see run.sh for configuration)
+./run.sh
+
+# Run for specific towns
+./run.sh Town01 Town03
+# or
+TOWNS="1,3,7,10" ./run.sh
+```
+
+Refer to `run.sh` for detailed generation pipeline including:
+- CARLA server lifecycle management
+- Town iteration and weather preset rotation
+- Traffic level configuration
+- Spawn offset calculation
+
+## Data Annotation
+
+생성한 데이터에 OpenLane-V2 형식의 주석을 입힙니다. 도커 기반으로 실행되고 argument가 많으니 참고해주세요
+
+먼저 GitHub Release의 v1.0 tag가 붙은 버전에서 .tar 파일을 다운로드하고 압축해제 해 주세요. 
+
+Run annotation pipeline in Docker container:
+
+```bash
+# Navigate to annotation tool directory
+cd OpenLane-V2-HDmap-Converter
+
+# Run Docker container with annotation script
+./run_docker.sh
+
+# Inside container, run annotation
+./annotation.sh
+```
+
+Refer to `annotation.sh` for annotation pipeline details.
+
+## Data Visualization
+
+./LaneSegNet/data 의 gt_generator.py 와 gt_generator_centerline.py 를 적절히 활용
+
+## Training Model
+
+```
+cd LaneSegNet/
+
+./tools/dist_train 1 --autoscale-lr
+```
+
+## Test Model
+
+```
+cd LaneSegNet/
+
+./tools/dist_test 1 --show
+```
+
+## Git 협업 방법
+
+main branch : 공동 작업 공간
+
+개인 작업 공간 만드는 방법
+
+git checkout -b bonghun
+
+브랜치 새로 생성됨
+
+git commit -a -m " 변경 내용을 텍스트로 정리 "
+
+git push origin bonghun
+
+
+## 01.07 meeting
+
+1. 깃허브 협업 논의
+2. Carla-OpenLane 단점 분석
+   2.1. 데이터셋 볼륨 : 보통은 (합성데이터 >>> 실제데이터) Sim2Real 을 한다는 거 자체가 대규모 합성 데이터에서 학습한 모델에 적은 실제 데이터를 넣으면서도 성능을 강화하는 기술
+   2.2. Method 의 성능 : 데이터 증강으로 인한 성능 개선은 확실하게 증명. 근데 Text-guided domain adaptation을 하는 method 가 많이 부족함. 성능 개선이 안됨  
+3. 봉훈님 to-do
+   3.1. 데이터셋 볼륨 키우는 접근법 세우기. data_capture 코드를 분석하면서 겸사겸사 데이터셋 볼륨을 키워보기(날씨, 지역, 시간, 교통량)
+   3.2. 데이터 주석 추가하기. carla-openlane 에는 신호등만 주석이 되어 있음. 이 주석을 노면 표시, 속도 제한 표지판 등으로 확장하고자 함(하운 먼저).
+   3.3. 자유롭게 봉훈님 연구하시면서 좋은 데이터셋 증강 방법이 있으면 의논해주세요
+4. 하운님 to-do
+   4.1. Carla-OpenLane 의 모델 한계를 분석해서 정리 & 개선 방향을 related works에서 고민
+   4.2. Overleaf 에서 CVPR format으로 되어있으니까 이걸 ECCV format 으로 고치기
+
+합성데이터에서 (RGB 랑 Depth 를 같이 활용해서 학습시키면 => supervision) => 얘는 되게 똑똑함
+실제데이터에서는 (RGB만 정답 레이블이 있고 Depth는 없음 => weakly supervsion , unsupervision) unsupervised domain adaptation 기법
+
+
+
+
