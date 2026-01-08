@@ -3,3 +3,6 @@ LaneSegNet/*/__pycache__/
 LaneSegNet/*/*.pyc
 LaneSegNet/*/*$py.class
 CLAUDE.md
+Carla/Carla-OpenLane/
+Carla/scripts/town_visualizations_val
+Carla/scripts/town_visualizations_train
