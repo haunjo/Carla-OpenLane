@@ -1,7 +1,7 @@
 #!/bin/bash
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate carla
-
+CARLA_PATH="/home/vip-dell/CARLA_0.9.15"
 SCENES=51
 
 # CARLA Weather Presets (17개)
@@ -128,7 +128,7 @@ echo "✅ 정리 완료"
 
 
 echo "🚀 Carla 시뮬레이터 실행 시작"
-./CarlaUE4.sh -prefernvidia -RenderOffScreen -nosound -quality-level=Epic &
+$CARLA_PATH/CarlaUE4.sh -prefernvidia -RenderOffScreen -nosound -quality-level=Epic &
 CARLA_PID=$!
 
 # Carla 실행 대기
@@ -145,7 +145,7 @@ for TOWN in "${SELECTED_TOWNS[@]}"; do
     echo "========================================="
     echo "🗺️  맵 전환: $TOWN"
     echo "========================================="
-    python ./PythonAPI/util/config.py --map "$TOWN"
+    python $CARLA_PATH/PythonAPI/util/config.py --map "$TOWN"
 
     for traffic_level in 1 2; do
         echo "#########################################"

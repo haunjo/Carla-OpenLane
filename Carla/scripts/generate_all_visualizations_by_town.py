@@ -289,12 +289,12 @@ def main():
     datasets = [
         # {
         #     'name': 'Train Dataset',
-        #     'path': '../Carla-OpenLane/train/',
+        #     'path': '/data/ECCV2/Carla-OpenLane/Carla/train',
         #     'type': 'train'
         # },
         {
             'name': 'Val Dataset',
-            'path': '../Carla-OpenLane/val/',
+            'path': '/data/ECCV2/Carla-OpenLane/Carla/val',
             'type': 'val'
         }
     ]

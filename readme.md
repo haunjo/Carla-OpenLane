@@ -1,233 +1,77 @@
-# Carla-OpenLane Dataset
+Hard Scenario Mode (악천후 + 근접 차량 혼잡도)
 
-A CARLA-based synthetic dataset generation pipeline for autonomous driving research with multi-camera sensor arrays and traffic light annotations compatible with Argoverse2 and nuScenes formats.
+본 프로젝트에는 기존 Carla-OpenLane 데이터셋의 다양성과 난이도를 높이기 위해 Hard Scenario 모드를 추가하였다. 이 모드는 일반적인 CARLA 기본 환경이 아닌, 실제 도로에서 자주 발생하는 악천후 상황과 ego 차량 주변의 높은 교통 혼잡도를 인위적으로 생성하여 보다 현실적인 학습 데이터를 수집하는 것을 목표로 한다.
 
+Hard Scenario 모드는 run_bh.sh에서 다음 옵션이 활성화되면 자동으로 적용된다.
 
-## Warning
+--hard-scenario --hard-occluders 100 --hard-jaywalkers 0
 
-### 1. 데이터 생성 및 주석 시 주의할 점
-본 레포지토리는 데이터 생성(Carla), 데이터 주석(OpenLane_V2-HDmap-Converter), 모델 학습(LaneSegNet)이 개별적으로 있지만 각 파일마다 경로 설정이 아직 USER가 쓰기에는 불편하게 설정되어 있습니다.
-스크립트에서 오류가 난다면 높은 확률로 경로설정 문제이니 참고해주세요.
 
-### 2. 데이터셋
-데이터 생성&주석의 샘플이 NAS에 있습니다. NAS를 통해서 먼저 데이터셋 구조를 파악하세요.
+또는 Python 스크립트를 직접 실행할 경우에도 동일한 옵션을 전달하여 사용할 수 있다.
 
-## Installation
+악천후 환경 생성
 
-### 1. CARLA Simulator Setup
+Hard Scenario 모드에서는 CARLA에서 제공하는 기본 weather preset을 그대로 사용하지 않고, 별도로 정의한 4가지 극단적인 날씨 설정 중 하나를 랜덤으로 적용한다.
 
-carla 시뮬레이터를 작업환경에 설치하세요. 0.10.0 버전은 호환이 잘 안되니 0.9.15 혹은 0.9.16 버전 권장
+강한 태양광 눈부심이 발생하는 맑은 낮 환경
 
-Install CARLA 0.9.15 following the official documentation:
-- [CARLA Documentation](https://carla.readthedocs.io/en/0.9.15/)
-- Setup includes: simulator installation, Python environment configuration, and dependency installation
+시야가 거의 확보되지 않는 초고농도 안개 환경
 
-### 2. Model Setup
+강우와 젖은 노면이 동반된 주간 환경
 
-- OpenLane-V2 : https://github.com/OpenDriveLab/OpenLane-V2
-    - warning : OpenLane-V2 설치 도중 오류가 나오는데, 의존성 패키지 중 ortools 버전이 삭제되었기 때문에 그 다음 버전 설치를 권장드립니다. 
-- LaneSegNet : https://github.com/OpenDriveLab/LaneSegNet 
+강우와 젖은 노면이 동반된 야간 환경
 
+이를 통해 조명 변화, 가시성 저하, 노면 반사, 센서 노이즈 등 실제 주행 환경에서 발생하는 다양한 어려운 조건을 데이터에 반영할 수 있다.
 
-### 2. Project Setup
+ego 차량 근처 교통 혼잡도 증가
 
+Hard Scenario 모드에서는 ego 차량 주변에 추가 차량을 강제로 생성하여 시야 차단(occlusion)과 교통 밀집 상황을 만든다.
 
-carla 데이터 어노테이션 툴을 설치합니다. 도커 tar 이미지를 다운로드해 주세요. 
+구현 상 ego 차량의 현재 위치를 기준으로 반경 60m 이내에 존재하는 스폰 포인트들을 후보로 수집하고, 이 중에서 최대 --hard-occluders 값만큼 차량 생성을 시도한다.
 
-```bash
-# Download project folder from release
-# (Release URL to be added)
+즉, 다음 코드에서 60.0 값이 혼잡도 적용 범위를 의미한다.
 
-# Download Docker image tar file from NAS
-# (NAS path to be added)
+if sp.location.distance(center_loc) < 60.0:
 
-# Load Docker image
-docker load < olv2Xhdmap.tar
 
-docker images
-```
+여기서:
 
-## Data Generation
+60.0은 ego 차량 기준 탐색 반경(미터 단위)
 
-run.sh 이 데이터 생성을 위한 통합 스크립트입니다. 실행해 주세요
+--hard-occluders는 생성 시도할 최대 차량 수
 
-Run data collection with `./run.sh`:
+실제 생성되는 차량 수는 맵 구조, 스폰 포인트 밀도, 충돌 여부에 따라 줄어들 수 있다
 
-```bash
-# Default settings (see run.sh for configuration)
-./run.sh
+생성된 차량들은 autopilot 모드로 주행하도록 설정된다
 
-# Run for specific towns
-./run.sh Town01 Town03
-# or
-TOWNS="1,3,7,10" ./run.sh
-```
+이 기능을 통해 카메라 전방 및 측면 시야가 차량에 의해 가려지는 현실적인 상황을 반복적으로 생성할 수 있다.
 
-Refer to `run.sh` for detailed generation pipeline including:
-- CARLA server lifecycle management
-- Town iteration and weather preset rotation
-- Traffic level configuration
-- Spawn offset calculation
+카메라 안정화 처리
 
-## Data Annotation
+시나리오가 전환되거나 occluder 차량이 새로 스폰되는 직후에는 CARLA 내부 동기화 문제로 인해 카메라가 순간적으로 기울어지거나 잘못된 자세를 가지는 경우가 발생할 수 있다.
 
-생성한 데이터에 OpenLane-V2 형식의 주석을 입힙니다. 도커 기반으로 실행되고 argument가 많으니 참고해주세요
+이를 방지하기 위해 Hard Scenario 모드에서는 다음과 같은 안정화 과정을 거친다.
 
-먼저 GitHub Release의 v1.0 tag가 붙은 버전에서 .tar 파일을 다운로드하고 압축해제 해 주세요. 
+시나리오 전환 직후 여러 tick 대기
 
-Run annotation pipeline in Docker container:
+occluder / walker 생성 직후 추가 tick 대기
 
-```bash
-# Navigate to annotation tool directory
-cd OpenLane-V2-HDmap-Converter
+센서 큐 flush 이후 캡처 수행
 
-# Run Docker container with annotation script
-./run_docker.sh
+이를 통해 카메라 pitch, yaw 값이 정상적으로 고정된 이후에만 프레임을 저장하도록 하여 데이터 품질을 안정화하였다.
 
-# Inside container, run annotation
-./annotation.sh
-```
+주요 파라미터 요약
 
-Refer to `annotation.sh` for annotation pipeline details.
+run_bh.sh 및 data_capture_Argoverse2_BH.py에서 조절 가능한 핵심 파라미터는 다음과 같다.
 
-## Data Visualization
+SCENES : Town 당 생성할 시나리오 수
 
-./LaneSegNet/data 의 gt_generator.py 와 gt_generator_centerline.py 를 적절히 활용
+--sample : ego 차량이 이동하며 캡처할 waypoint 개수
 
-## Training Model
+--step : waypoint 간 거리 (미터)
 
-```
-cd LaneSegNet/
+--traffic-level : 배경 차량 밀도 (1 = 없음, 2 = 기본 교통량)
 
-./tools/dist_train 1 --autoscale-lr
-```
+--spawn-offset : ego 시작 위치 시드
 
-## Test Model
-
-```
-cd LaneSegNet/
-
-./tools/dist_test 1 --show
-```
-
-## Git 협업 방법
-
-main branch : 공동 작업 공간
-
-개인 작업 공간 만드는 방법
-
-git checkout -b bonghun
-
-브랜치 새로 생성됨
-
-git commit -a -m " 변경 내용을 텍스트로 정리 "
-
-git push origin bonghun
-
-
-## 01.07 meeting
-
-1. 깃허브 협업 논의
-2. Carla-OpenLane 단점 분석
-   2.1. 데이터셋 볼륨 : 보통은 (합성데이터 >>> 실제데이터) Sim2Real 을 한다는 거 자체가 대규모 합성 데이터에서 학습한 모델에 적은 실제 데이터를 넣으면서도 성능을 강화하는 기술
-   2.2. Method 의 성능 : 데이터 증강으로 인한 성능 개선은 확실하게 증명. 근데 Text-guided domain adaptation을 하는 method 가 많이 부족함. 성능 개선이 안됨  
-3. 봉훈님 to-do
-   3.1. 데이터셋 볼륨 키우는 접근법 세우기. data_capture 코드를 분석하면서 겸사겸사 데이터셋 볼륨을 키워보기(날씨, 지역, 시간, 교통량)
-   3.2. 데이터 주석 추가하기. carla-openlane 에는 신호등만 주석이 되어 있음. 이 주석을 노면 표시, 속도 제한 표지판 등으로 확장하고자 함(하운 먼저).
-   3.3. 자유롭게 봉훈님 연구하시면서 좋은 데이터셋 증강 방법이 있으면 의논해주세요
-4. 하운님 to-do
-   4.1. Carla-OpenLane 의 모델 한계를 분석해서 정리 & 개선 방향을 related works에서 고민
-   4.2. Overleaf 에서 CVPR format으로 되어있으니까 이걸 ECCV format 으로 고치기
-
-합성데이터에서 (RGB 랑 Depth 를 같이 활용해서 학습시키면 => supervision) => 얘는 되게 똑똑함
-실제데이터에서는 (RGB만 정답 레이블이 있고 Depth는 없음 => weakly supervsion , unsupervision) unsupervised domain adaptation 기법 Default settings (see run.sh for configuration)
-./run.sh
-
-# Run for specific towns
-./run.sh Town01 Town03
-# or
-TOWNS="1,3,7,10" ./run.sh
-```
-
-Refer to `run.sh` for detailed generation pipeline including:
-- CARLA server lifecycle management
-- Town iteration and weather preset rotation
-- Traffic level configuration
-- Spawn offset calculation
-
-## Data Annotation
-
-생성한 데이터에 OpenLane-V2 형식의 주석을 입힙니다. 도커 기반으로 실행되고 argument가 많으니 참고해주세요
-
-먼저 GitHub Release의 v1.0 tag가 붙은 버전에서 .tar 파일을 다운로드하고 압축해제 해 주세요. 
-
-Run annotation pipeline in Docker container:
-
-```bash
-# Navigate to annotation tool directory
-cd OpenLane-V2-HDmap-Converter
-
-# Run Docker container with annotation script
-./run_docker.sh
-
-# Inside container, run annotation
-./annotation.sh
-```
-
-Refer to `annotation.sh` for annotation pipeline details.
-
-## Data Visualization
-
-./LaneSegNet/data 의 gt_generator.py 와 gt_generator_centerline.py 를 적절히 활용
-
-## Training Model
-
-```
-cd LaneSegNet/
-
-./tools/dist_train 1 --autoscale-lr
-```
-
-## Test Model
-
-```
-cd LaneSegNet/
-
-./tools/dist_test 1 --show
-```
-
-## Git 협업 방법
-
-main branch : 공동 작업 공간
-
-개인 작업 공간 만드는 방법
-
-git checkout -b bonghun
-
-브랜치 새로 생성됨
-
-git commit -a -m " 변경 내용을 텍스트로 정리 "
-
-git push origin bonghun
-
-
-## 01.07 meeting
-
-1. 깃허브 협업 논의
-2. Carla-OpenLane 단점 분석
-   2.1. 데이터셋 볼륨 : 보통은 (합성데이터 >>> 실제데이터) Sim2Real 을 한다는 거 자체가 대규모 합성 데이터에서 학습한 모델에 적은 실제 데이터를 넣으면서도 성능을 강화하는 기술
-   2.2. Method 의 성능 : 데이터 증강으로 인한 성능 개선은 확실하게 증명. 근데 Text-guided domain adaptation을 하는 method 가 많이 부족함. 성능 개선이 안됨  
-3. 봉훈님 to-do
-   3.1. 데이터셋 볼륨 키우는 접근법 세우기. data_capture 코드를 분석하면서 겸사겸사 데이터셋 볼륨을 키워보기(날씨, 지역, 시간, 교통량)
-   3.2. 데이터 주석 추가하기. carla-openlane 에는 신호등만 주석이 되어 있음. 이 주석을 노면 표시, 속도 제한 표지판 등으로 확장하고자 함(하운 먼저).
-   3.3. 자유롭게 봉훈님 연구하시면서 좋은 데이터셋 증강 방법이 있으면 의논해주세요
-4. 하운님 to-do
-   4.1. Carla-OpenLane 의 모델 한계를 분석해서 정리 & 개선 방향을 related works에서 고민
-   4.2. Overleaf 에서 CVPR format으로 되어있으니까 이걸 ECCV format 으로 고치기
-
-합성데이터에서 (RGB 랑 Depth 를 같이 활용해서 학습시키면 => supervision) => 얘는 되게 똑똑함
-실제데이터에서는 (RGB만 정답 레이블이 있고 Depth는 없음 => weakly supervsion , unsupervision) unsupervised domain adaptation 기법
-
-
-
-
+--hard-occluders : Hard Scenario에서 생성할 근접 차량 수
