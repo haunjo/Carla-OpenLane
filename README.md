@@ -34,41 +34,41 @@
 ### Option 1: Use Pre-Annotated Dataset (Recommended)
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/haunjo/Carla-OpenLane.git
 cd Carla-OpenLane
 
-# Download pre-annotated dataset (Subset A)
-# Note: Dataset will be available soon
-# ./scripts/download_dataset.sh --subset A
+# 2. Download dataset (Subset A: ArgoVerse2, 36GB)
+./scripts/download_dataset.sh --subset A
 
-# For now, prepare with your own annotated data
-# Follow Option 2 to annotate CARLA data first
+# 3. Preprocess annotations to PKL format
+cd models/LaneSegNet
+python preprocess-ls.py  # or preprocess.py
 
-# Prepare training data
-cd LaneSegNet/data
-python gt_generator.py --data-json ../../datasets/splits/train.json
-
-# Train model
-cd ..
-./tools/dist_train.sh configs/carla_openlanev2.py 4 --autoscale-lr
+# 4. Train model (4 GPUs)
+./tools/dist_train.sh 4
 ```
 
-### Option 2: Full Pipeline (Custom Data)
+> ⚠️ **Note:** Dataset download links will be available soon. See [Dataset](#dataset) section below.
+
+### Option 2: Annotate Custom CARLA Data
 
 ```bash
-# 1. Generate CARLA data (requires CARLA 0.9.15)
-#    See docs/FULL_WORKFLOW.md for details
+# 1. Prepare CARLA raw data (requires CARLA 0.9.15)
+#    See docs/FULL_WORKFLOW.md for data generation
 
 # 2. Annotate with OpenLane-V2-HDmap-Converter
 git clone https://github.com/haunjo/OpenLane-V2-HDmap-Converter.git
 cd OpenLane-V2-HDmap-Converter
-# Follow annotation guide: docs/ANNOTATION.md
+# Follow annotation guide in that repository
 
-# 3. Return to Carla-OpenLane and train
-cd ../Carla-OpenLane/LaneSegNet
-./tools/dist_train.sh configs/carla_openlanev2.py 4
+# 3. Return to Carla-OpenLane, preprocess and train
+cd ../Carla-OpenLane/models/LaneSegNet
+python preprocess-ls.py
+./tools/dist_train.sh 4
 ```
+
+**Full workflow guide:** [docs/FULL_WORKFLOW.md](docs/FULL_WORKFLOW.md)
 
 ---
 
