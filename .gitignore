@@ -1,8 +1,90 @@
+# Development notes (internal)
+DEVELOPMENT_NOTES.md
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# LaneSegNet specific
 LaneSegNet/tools/scripts/
 LaneSegNet/*/__pycache__/
-LaneSegNet/*/*.pyc
-LaneSegNet/*/*$py.class
-CLAUDE.md
+LaneSegNet/work_dirs/
+LaneSegNet/checkpoints/
+LaneSegNet/.mim/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dataset files (large)
+datasets/raw/
+datasets/*.tar
+datasets/*.tar.gz
+datasets/*.zip
+*.pkl
+*.pth
+
+# Symlinks to external data
 Carla/Carla-OpenLane/
-Carla/scripts/town_visualizations_val
-Carla/scripts/town_visualizations_train
+
+# Visualization outputs
+Carla/scripts/town_visualizations_val/
+Carla/scripts/town_visualizations_train/
+scene_distribution_charts/
+*.png
+*.jpg
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Model outputs
+work_dirs/
+checkpoints/
+*.pth
+logs/
+
+# Coverage reports
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Statistics and analysis outputs (exclude large data files)
+# Allow important JSON config/stats files
+carla_split_*_data.json
+*.pkl
+
+# But keep these
+!datasets/splits/*.json
+!datasets/statistics/*.json
+!Carla/openlane_v2_subset_A.json
+!Carla/openlane_v2_subset_B.json
+!docs/**/*.json
+
+# Large archive files
+Carla-OpenLane-subset-A.tar
+Carla-OpenLane-subset-B.tar

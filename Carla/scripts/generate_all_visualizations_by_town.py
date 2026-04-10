@@ -25,30 +25,41 @@ import time
 #         sys.path.insert(0, carla_egg[0])
 #     import carla
 #     CARLA_AVAILABLE = True
-#     print("✅ CARLA Python API 모듈 로드 성공")
+#     print("CARLA Python API 모듈 로드 성공")
 # except ImportError as e:
 #     CARLA_AVAILABLE = False
-#     print(f"⚠️ CARLA Python API 없음: {e}. 기존 저장된 HD map 데이터를 사용합니다.")
+#     print(f"CARLA Python API 없음: {e}. 기존 저장된 HD map 데이터를 사용합니다.")
 
 def extract_town_from_source_id(source_id):
     """source_id에서 Town 이름을 추출
 
-    예시: "Carla/Maps/Town0191" -> "Town01"
-         "Carla/Maps/Town1076" -> "Town10"
+    예시: "Carla/Maps/Town03/frame_31468" -> "Town03" (새 형식, 슬래시 4개)
+         "Carla/Maps/Town10HD/frame_31468" -> "Town10" (새 형식 Town10HD)
+         "Carla/Maps/Town10HD14686" -> "Town10" (구 형식, 슬래시 3개)
     """
     if not source_id or 'Town' not in source_id:
         return "Unknown"
 
     try:
-        # "Carla/Maps/Town0191" -> "Town0191"
-        town_part = source_id.split('/')[-1]
+        parts = source_id.split('/')
 
-        # "Town0191" -> "Town01" (앞 두 자리만 추출)
-        if town_part.startswith('Town') and len(town_part) >= 6:
-            town_num = town_part[4:6]  # "01"
-            return f"Town{town_num}"
+        # 슬래시 개수로 형식 판단
+        if len(parts) == 4:
+            # 새 형식: "Carla/Maps/Town03/frame_31468"
+            town_part = parts[2]  # "Town03" or "Town10HD"
+            if town_part.startswith('Town'):
+                # Town10HD를 Town10으로 통합
+                if town_part == 'Town10HD':
+                    return 'Town10'
+                return town_part
+        elif len(parts) == 3:
+            # 구 형식: "Carla/Maps/Town10HD14686"
+            town_part = parts[2]  # "Town10HD14686"
+            if town_part.startswith('Town') and len(town_part) >= 6:
+                town_num = town_part[4:6]  # "10"
+                return f"Town{town_num}"
 
-        return town_part
+        return "Unknown"
     except:
         return "Unknown"
 
@@ -59,8 +70,9 @@ def extract_pose_coordinates_by_town(dataset_path):
 
     segment_dirs = glob.glob(os.path.join(dataset_path, '*'))
     segment_dirs = [d for d in segment_dirs if os.path.isdir(d)]
+    print(segment_dirs)
 
-    print(f"📁 발견된 segment 디렉토리 수: {len(segment_dirs)}")
+    print(f"발견된 segment 디렉토리 수: {len(segment_dirs)}")
 
     town_stats = defaultdict(int)
 
@@ -102,7 +114,7 @@ def extract_pose_coordinates_by_town(dataset_path):
             except (json.JSONDecodeError, KeyError, FileNotFoundError):
                 continue
 
-    print(f"\n🏘️ 발견된 Town별 데이터:")
+    print(f"\n발견된 Town별 데이터:")
     for town, count in sorted(town_stats.items()):
         print(f"   • {town}: {count:,}개 pose")
 
@@ -110,17 +122,18 @@ def extract_pose_coordinates_by_town(dataset_path):
 
 def load_or_extract_hd_map_data(town_name):
     """Town별 HD Map 데이터 로드 (JSON 우선, OpenDRIVE는 fallback)"""
-
+    if town_name == "Town10HD":
+        town_name = "Town10"
     # 1순위: CARLA 서버에서 추출한 waypoint 기반 JSON (가장 정확)
     map_file = f"{town_name.lower()}_hd_map_data.json"
     if os.path.exists(map_file):
         try:
             with open(map_file, 'r') as f:
                 map_data = json.load(f)
-            print(f"✅ {town_name} HD map JSON 로드 (waypoint-based)")
+            print(f"{town_name} HD map JSON 로드 (waypoint-based)")
             return map_data['road_segments'], map_data['spawn_points']
         except Exception as e:
-            print(f"⚠️  {town_name} JSON 로드 실패: {e}")
+            print(f"[WARNING]  {town_name} JSON 로드 실패: {e}")
 
 
 def create_town_visualization(town_name, coordinates, metadata, road_segments, spawn_points,
@@ -130,10 +143,10 @@ def create_town_visualization(town_name, coordinates, metadata, road_segments, s
     os.makedirs(output_dir, exist_ok=True)
 
     if not coordinates:
-        print(f"❌ {town_name}: 좌표 데이터 없음")
+        print(f"[ERROR] {town_name}: 좌표 데이터 없음")
         return
 
-    print(f"🎨 {town_name} 시각화 생성 중... ({len(coordinates)}개 pose)")
+    print(f"[INFO] {town_name} 시각화 생성 중... ({len(coordinates)}개 pose)")
 
     # 논문용 고해상도 플롯 설정
     plt.style.use('default')
@@ -244,7 +257,7 @@ def create_town_visualization(town_name, coordinates, metadata, road_segments, s
     ax.set_xlabel('')
     ax.set_ylabel('')
     ax.set_title(f'CARLA {town_name} {dataset_type.title()} Dataset',
-                 fontsize=18, fontweight='bold', pad=15)
+                 fontsize=24, fontweight='bold', pad=15)
 
     ax.set_xticks([])
     ax.set_yticks([])
@@ -255,15 +268,15 @@ def create_town_visualization(town_name, coordinates, metadata, road_segments, s
     ax.set_ylim(min(pose_y) - padding, max(pose_y) + padding)
 
     # 6. Summary 정보 박스 (왼쪽 위)
-    summary_text = f"""📍 {town_name}
-📐 Area: {town_width:.0f}m × {town_height:.0f}m
-🎬 Scenes: {scene_count:,}
-🎞️ Frames: {frame_count:,}"""
+    summary_text = f"""{town_name}
+Area: {town_width:.0f}m × {town_height:.0f}m
+Scenes: {scene_count:,}
+Frames: {frame_count:,}"""
 
     # 텍스트 박스 스타일
     bbox_props = dict(boxstyle='round,pad=0.5', facecolor='white', edgecolor='black', alpha=0.9)
 
-    ax.text(0.02, 0.98, summary_text, transform=ax.transAxes, fontsize=13,
+    ax.text(0.02, 0.98, summary_text, transform=ax.transAxes, fontsize=18,
            verticalalignment='top', horizontalalignment='left', bbox=bbox_props,
            fontweight='bold', zorder=10)
 
@@ -276,7 +289,7 @@ def create_town_visualization(town_name, coordinates, metadata, road_segments, s
     # 저장 (논문용 고해상도)
     output_file = os.path.join(output_dir, f'{town_name.lower()}_{dataset_type}_visualization.png')
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white', edgecolor='none')
-    print(f"✅ {town_name} 시각화 저장: {output_file}")
+    print(f"[SUCCESS] {town_name} 시각화 저장: {output_file}")
 
     plt.close(fig)  # 메모리 정리
 
@@ -287,31 +300,31 @@ def main():
 
     # 데이터셋 경로 설정 (Train만)
     datasets = [
-        # {
-        #     'name': 'Train Dataset',
-        #     'path': '../Carla-OpenLane/train/',
-        #     'type': 'train'
-        # },
         {
-            'name': 'Val Dataset',
-            'path': '../Carla-OpenLane/val/',
-            'type': 'val'
-        }
+            'name': 'Train Dataset',
+            'path': '../Carla-OpenLane/train/',
+            'type': 'train'
+        },
+        # {
+        #     'name': 'Val Dataset',
+        #     'path': '../Carla-OpenLane/subset_A/val/',
+        #     'type': 'val'
+        # }
     ]
 
     # 각 데이터셋 처리
     for dataset in datasets:
-        print(f"\n🗂️ {dataset['name']} 처리 시작...")
+        print(f"\n[PROCESSING] {dataset['name']} 처리 시작...")
 
         if not os.path.exists(dataset['path']):
-            print(f"❌ {dataset['path']} 경로 없음")
+            print(f"[ERROR] {dataset['path']} 경로 없음")
             continue
 
         # Town별 데이터 추출
         coordinates_by_town, metadata_by_town = extract_pose_coordinates_by_town(dataset['path'])
 
         if not coordinates_by_town:
-            print(f"❌ {dataset['name']}: 추출된 데이터 없음")
+            print(f"[ERROR] {dataset['name']}: 추출된 데이터 없음")
             continue
 
         # 각 Town별 시각화 생성
@@ -319,13 +332,13 @@ def main():
             if town_name == "Unknown":
                 continue
 
-            print(f"\n🏘️ {town_name} 처리 중...")
+            print(f"\n[PROCESSING] {town_name} 처리 중...")
 
             coordinates = coordinates_by_town[town_name]
             metadata = metadata_by_town[town_name]
 
             if len(coordinates) < 10:  # 데이터가 너무 적으면 건너뛰기
-                print(f"⚠️ {town_name}: 데이터 부족 ({len(coordinates)}개) - 건너뛰기")
+                print(f"[WARNING] {town_name}: 데이터 부족 ({len(coordinates)}개) - 건너뛰기")
                 continue
 
             # HD Map 데이터 로드/추출
@@ -346,7 +359,7 @@ def main():
 
     # 결과 요약
     print(f"\n{'='*80}")
-    print("🎉 Town별 시각화 생성 완료!")
+    print("[COMPLETE] Town별 시각화 생성 완료!")
     print(f"{'='*80}")
 
     # 생성된 결과물 확인
@@ -355,13 +368,13 @@ def main():
     for output_dir in output_dirs:
         if os.path.exists(output_dir):
             files = [f for f in os.listdir(output_dir) if f.endswith('.png')]
-            print(f"📁 {output_dir}/: {len(files)}개 시각화")
+            print(f"[DIR] {output_dir}/: {len(files)}개 시각화")
 
             # Town별 파일 목록
             for file in sorted(files):
                 print(f"   • {file}")
         else:
-            print(f"❌ {output_dir}/: 생성되지 않음")
+            print(f"[ERROR] {output_dir}/: 생성되지 않음")
 
 if __name__ == "__main__":
     main()
