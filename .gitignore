@@ -63,7 +63,7 @@ Carla/scripts/town_visualizations_val/
 Carla/scripts/town*_hd_map_data.json
 
 # =============================================================================
-# LaneSegNet/ — heavy training outputs
+# Baseline models — heavy training outputs & data
 # =============================================================================
 LaneSegNet/work_dirs/
 LaneSegNet/checkpoints/
@@ -82,7 +82,23 @@ LaneSegNet/demo_output/
 LaneSegNet/.venv_siglip/
 LaneSegNet/.mim/
 
-# LaneSegNet/ — ad-hoc analysis scripts in root (not part of the framework)
+TopoLogic/work_dirs/
+TopoLogic/checkpoints/
+TopoLogic/ckpts/
+TopoLogic/data/
+TopoLogic/figs/
+TopoLogic/.mim/
+
+TopoNet/work_dirs/
+TopoNet/checkpoints/
+TopoNet/ckpts/
+TopoNet/data/
+TopoNet/figs/
+TopoNet/.mim/
+
+# =============================================================================
+# Baseline models — ad-hoc scripts & output files in LaneSegNet root
+# =============================================================================
 LaneSegNet/analyze_*.py
 LaneSegNet/check_*.py
 LaneSegNet/compare_*.py
@@ -97,16 +113,13 @@ LaneSegNet/add_*.py
 LaneSegNet/move_*.py
 LaneSegNet/deep_*.py
 LaneSegNet/debug_*.py
+LaneSegNet/test_*.py
 LaneSegNet/create_carla_*.py
 LaneSegNet/train_simple_*.py
 LaneSegNet/clean_adapter_*.py
-
-# LaneSegNet/ — ad-hoc shell scripts in root
 LaneSegNet/run_*.sh
 LaneSegNet/quick_*.sh
 LaneSegNet/test_*.sh
-
-# LaneSegNet/ — analysis output files in root
 LaneSegNet/*.json
 LaneSegNet/*.pt
 LaneSegNet/*.pth
@@ -114,8 +127,6 @@ LaneSegNet/*.pdf
 LaneSegNet/*.txt
 LaneSegNet/*.png
 LaneSegNet/*.jpg
-
-# LaneSegNet/ — analysis script subdirectories
 LaneSegNet/script/
 LaneSegNet/scripts/
 LaneSegNet/doc/
@@ -131,3 +142,5 @@ datasets/statistics/scene_distribution_charts/
 !Carla/openlane_v2_subset_A.json
 !Carla/openlane_v2_subset_B.json
 !LaneSegNet/requirements.txt
+!TopoLogic/requirements.txt
+!TopoNet/requirements.txt

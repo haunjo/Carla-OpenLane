@@ -111,18 +111,30 @@ Carla-OpenLane/
 │   ├── openlane_v2_subset_A/B.json # Output annotation templates
 │   ├── Carla-OpenLane/             # Captured dataset (train/val images + JSON)
 │   └── scripts/                    # HD map visualization tools
-├── LaneSegNet/                   # Model training framework
+├── LaneSegNet/                   # LaneSegNet baseline (based on OpenDriveLab/LaneSegNet)
 │   ├── projects/                   # Model code (bevformer, lanesegnet)
 │   │   └── configs/                # Training configs (CARLA, OpenLane-V2)
 │   ├── tools/                      # train.py, test.py, data_process.py
 │   │   ├── dist_train.sh           # Distributed training launcher
 │   │   └── dist_test.sh            # Distributed evaluation launcher
 │   ├── data/                       # Symlinks to actual datasets
-│   │   ├── Carla-OpenLane -> ...   # Symlink to Carla-OpenLane dataset
-│   │   └── OpenLane-V2 -> ...      # Symlink to OpenLane-V2 dataset
-│   ├── checkpoints/                # Pre-trained checkpoints
+│   ├── checkpoints/                # Pre-trained checkpoints (gitignored)
 │   ├── work_dirs/                  # Training outputs (gitignored)
-│   └── CLAUDE.md                   # Detailed architecture & experiment notes
+│   └── CLAUDE.md                   # Architecture & experiment notes
+├── TopoLogic/                    # TopoLogic baseline (based on Franpin/TopoLogic)
+│   ├── projects/                   # Model code (bevformer, topologic)
+│   │   └── configs/                # Training configs
+│   ├── tools/                      # dist_train.sh, dist_test.sh, train.py, test.py
+│   ├── openlanev2/                 # Custom OpenLane-V2 utilities
+│   ├── data/                       # Symlinks to actual datasets (gitignored)
+│   ├── work_dirs/                  # Training outputs (gitignored)
+│   └── CLAUDE.md                   # Architecture & experiment notes
+├── TopoNet/                      # TopoNet baseline (based on OpenDriveLab/TopoNet)
+│   ├── projects/                   # Model code (bevformer, toponet)
+│   │   └── configs/                # Training configs
+│   ├── tools/                      # dist_train.sh, dist_test.sh, train.py, test.py
+│   ├── data/                       # Symlinks to actual datasets (gitignored)
+│   └── work_dirs/                  # Training outputs (gitignored)
 ├── datasets/
 │   ├── splits/                     # Train/val split manifests
 │   └── statistics/                 # Scene distribution stats and charts
@@ -194,7 +206,8 @@ scripts/annotation.sh --split train --subset argoverse2 --task segment
 ### Supported Models
 
 - **LaneSegNet** (included in `LaneSegNet/`, based on [OpenDriveLab/LaneSegNet](https://github.com/OpenDriveLab/LaneSegNet))
-- **TopoNet** (compatible with OpenLane-V2 format)
+- **TopoLogic** (included in `TopoLogic/`, based on [Franpin/TopoLogic](https://github.com/Franpin/TopoLogic))
+- **TopoNet** (included in `TopoNet/`, based on [OpenDriveLab/TopoNet](https://github.com/OpenDriveLab/TopoNet))
 - **Custom models** (use our dataloader)
 
 ### Training LaneSegNet
@@ -285,6 +298,8 @@ If you use this dataset or code, please cite:
 - **[OpenLane-V2](https://github.com/OpenDriveLab/OpenLane-V2)** - Original dataset and benchmark
 - **[OpenLane-V2-HDmap-Converter](https://github.com/haunjo/OpenLane-V2-HDmap-Converter)** - Annotation tool
 - **[LaneSegNet](https://github.com/OpenDriveLab/LaneSegNet)** - Baseline model (our `LaneSegNet/` is based on this)
+- **[TopoLogic](https://github.com/Franpin/TopoLogic)** - Baseline model (our `TopoLogic/` is based on this)
+- **[TopoNet](https://github.com/OpenDriveLab/TopoNet)** - Baseline model (our `TopoNet/` is based on this)
 - **[CARLA Simulator](https://carla.org/)** - Data generation platform
 
 ---

@@ -4,8 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Sub-projects
 
-- **CARLA Data Collection** (this directory): Generates synthetic driving datasets in Argoverse2/nuScenes formats. See below.
-- **LaneSegNet** (`LaneSegNet/`): Deep learning framework for lane segment perception. See @LaneSegNet/CLAUDE.md.
+- **CARLA Data Collection** (`Carla/`): Generates synthetic driving datasets in Argoverse2/nuScenes formats. See below.
+- **LaneSegNet** (`LaneSegNet/`): Lane segment perception baseline. See @LaneSegNet/CLAUDE.md.
+- **TopoLogic** (`TopoLogic/`): NeurIPS 2024 lane topology reasoning baseline. See @TopoLogic/CLAUDE.md.
+- **TopoNet** (`TopoNet/`): OpenDriveLab topology network baseline.
 
 ## Project Overview
 
