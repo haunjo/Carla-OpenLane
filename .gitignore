@@ -1,7 +1,6 @@
-# Development notes (internal)
-DEVELOPMENT_NOTES.md
-
+# =============================================================================
 # Python cache
+# =============================================================================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,81 +9,125 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+*.log
 
-# LaneSegNet specific
-LaneSegNet/tools/scripts/
-LaneSegNet/*/__pycache__/
-LaneSegNet/work_dirs/
-LaneSegNet/checkpoints/
-LaneSegNet/.mim/
-
+# =============================================================================
 # Virtual environments
+# =============================================================================
 venv/
 env/
 ENV/
-.venv
+.venv/
+.venv_siglip/
 
-# IDE settings
+# =============================================================================
+# IDE / OS
+# =============================================================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
+Thumbs.db
 
-# Dataset files (large)
+# =============================================================================
+# Paper / internal documents  (not for public repo)
+# =============================================================================
+*.pdf
+*.docx
+*.tex
+DEVELOPMENT_NOTES.md
+README_UPDATES.md
+
+# =============================================================================
+# Heavy data & model binaries
+# =============================================================================
+*.pkl
+*.pth
+*.pt
 datasets/raw/
 datasets/*.tar
 datasets/*.tar.gz
 datasets/*.zip
-*.pkl
-*.pth
 
-# Symlinks to external data
+# =============================================================================
+# Carla/ — generated & captured data
+# =============================================================================
 Carla/Carla-OpenLane/
-
-# Visualization outputs
-Carla/scripts/town_visualizations_val/
 Carla/scripts/town_visualizations_train/
-scene_distribution_charts/
-*.png
-*.jpg
+Carla/scripts/town_visualizations_val/
+Carla/scripts/town*_hd_map_data.json
 
-# Temporary files
-*.tmp
-*.log
-*.bak
+# =============================================================================
+# LaneSegNet/ — heavy training outputs
+# =============================================================================
+LaneSegNet/work_dirs/
+LaneSegNet/checkpoints/
+LaneSegNet/ckpts/
+LaneSegNet/data/
+LaneSegNet/lanesegnet_*/
+LaneSegNet/outs/
+LaneSegNet/results_adapter/
+LaneSegNet/features/
+LaneSegNet/archive/
+LaneSegNet/scale_logs/
+LaneSegNet/figures/
+LaneSegNet/fig/
+LaneSegNet/image/
+LaneSegNet/demo_output/
+LaneSegNet/.venv_siglip/
+LaneSegNet/.mim/
 
-# OS files
-.DS_Store
-Thumbs.db
+# LaneSegNet/ — ad-hoc analysis scripts in root (not part of the framework)
+LaneSegNet/analyze_*.py
+LaneSegNet/check_*.py
+LaneSegNet/compare_*.py
+LaneSegNet/find_*.py
+LaneSegNet/fix_*.py
+LaneSegNet/inspect_*.py
+LaneSegNet/plot_*.py
+LaneSegNet/show_*.py
+LaneSegNet/verify_*.py
+LaneSegNet/update_*.py
+LaneSegNet/add_*.py
+LaneSegNet/move_*.py
+LaneSegNet/deep_*.py
+LaneSegNet/debug_*.py
+LaneSegNet/create_carla_*.py
+LaneSegNet/train_simple_*.py
+LaneSegNet/clean_adapter_*.py
 
-# Jupyter notebook checkpoints
-.ipynb_checkpoints/
-*.ipynb_checkpoints
+# LaneSegNet/ — ad-hoc shell scripts in root
+LaneSegNet/run_*.sh
+LaneSegNet/quick_*.sh
+LaneSegNet/test_*.sh
 
-# Model outputs
-work_dirs/
-checkpoints/
-*.pth
-logs/
+# LaneSegNet/ — analysis output files in root
+LaneSegNet/*.json
+LaneSegNet/*.pt
+LaneSegNet/*.pth
+LaneSegNet/*.pdf
+LaneSegNet/*.txt
+LaneSegNet/*.png
+LaneSegNet/*.jpg
 
-# Coverage reports
-htmlcov/
-.coverage
-.pytest_cache/
+# LaneSegNet/ — analysis script subdirectories
+LaneSegNet/script/
+LaneSegNet/scripts/
+LaneSegNet/doc/
 
-# Statistics and analysis outputs (exclude large data files)
-# Allow important JSON config/stats files
-carla_split_*_data.json
-*.pkl
-
-# But keep these
+# =============================================================================
+# Exceptions — always track these
+# =============================================================================
+!datasets/splits/
 !datasets/splits/*.json
+!datasets/statistics/
 !datasets/statistics/*.json
+datasets/statistics/scene_distribution_charts/
 !Carla/openlane_v2_subset_A.json
 !Carla/openlane_v2_subset_B.json
-!docs/**/*.json
-
-# Large archive files
-Carla-OpenLane-subset-A.tar
-Carla-OpenLane-subset-B.tar
+!LaneSegNet/requirements.txt

@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Sub-projects
+
+- **CARLA Data Collection** (this directory): Generates synthetic driving datasets in Argoverse2/nuScenes formats. See below.
+- **LaneSegNet** (`LaneSegNet/`): Deep learning framework for lane segment perception. See @LaneSegNet/CLAUDE.md.
+
 ## Project Overview
 
 This is a **CARLA-based data collection system** for generating autonomous driving datasets compatible with **Argoverse2** and **nuScenes** formats. The project generates synthetic driving data with multi-camera sensor arrays, traffic light annotations, and scene descriptions for lane topology reasoning research.
