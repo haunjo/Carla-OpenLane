@@ -23,7 +23,7 @@ SUBSET_A_GDRIVE_ID="YOUR_SUBSET_A_FILE_ID"
 SUBSET_B_GDRIVE_ID="YOUR_SUBSET_B_FILE_ID"
 
 # ── GitHub release asset URL ─────────────────────────────────────────────────
-CONVERTER_RELEASE_URL="https://github.com/haunjo/Carla-OpenLane/releases/download/v1.0/OpenLane-V2-HDmap-Converter-v1.0.zip"
+CONVERTER_RELEASE_URL="https://github.com/haunjo/Carla-OpenLane/releases/download/v1.1/OpenLane-V2-HDmap-Converter-v1.0.zip"
 
 # ── Defaults ─────────────────────────────────────────────────────────────────
 SUBSET=""
