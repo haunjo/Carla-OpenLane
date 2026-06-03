@@ -54,10 +54,10 @@ doc/
 *.pkl
 *.pth
 *.pt
+*.zip
+*.tar
+*.tar.gz
 datasets/raw/
-datasets/*.tar
-datasets/*.tar.gz
-datasets/*.zip
 
 # =============================================================================
 # Carla/ — internal symlinks and generated data
