@@ -51,7 +51,7 @@ python tools/data_process.py
 ./tools/dist_train.sh 4
 ```
 
-> ⚠️ **Note:** Dataset download links will be available soon. See [Dataset](#dataset) section below.
+> Dataset download will be available upon paper acceptance. Contact the maintainer for early access.
 
 ### Option 2: Annotate Custom CARLA Data
 
@@ -81,20 +81,19 @@ python tools/data_process.py
 
 ### Available Subsets
 
-| Subset | Scenes | Cameras | Resolution | Size | Download |
-|--------|--------|---------|------------|------|----------|
-| **A (ArgoVerse2)** | 200 | 7 | 2048×1550 (front) | 36GB | [Google Drive](https://drive.google.com/file/d/DATASET_A_LINK) ⚠️ |
-| **B (nuScenes)** | 200 | 6 | 1600×900 | 32GB | [Google Drive](https://drive.google.com/file/d/DATASET_B_LINK) ⚠️ |
+| Subset | Scenes | Frames | Cameras | Resolution | Format |
+|--------|--------|--------|---------|------------|--------|
+| **A (ArgoVerse2)** | 790 (729 train / 61 val) | ~15,800 | 7 | 2048×1550 (front) | Argoverse2 |
+| **B (nuScenes)** | 634 (498 train / 136 val) | ~12,680 | 6 | 1600×900 | nuScenes |
 
-> ⚠️ **Note:** Dataset download links will be added after upload to Google Drive.
+> Dataset download will be available upon paper acceptance. Contact the maintainer for early access.
 
 ### Statistics (Subset A)
 
-- **Total frames:** ~6000
 - **Avg lanes per frame:** 26.3
 - **Avg traffic elements:** 3.2 (lights + signs)
 - **Intersection frames:** 18.5%
-- **Towns:** Town01, Town03, Town10
+- **Towns:** Town01, Town03, Town04, Town05, Town06, Town07, Town10
 
 ![Environmental diversity across weather, time-of-day, and CARLA towns](docs/figs/carla_distribution.png)
 
@@ -269,8 +268,9 @@ If you use this dataset or code, please cite:
 ```bibtex
 @misc{carla-openlane2025,
   title={Carla-OpenLane: A Synthetic Dataset for 3D Lane Topology Detection},
-  author={Haunjo Jo, et al.},
+  author={Jo, Haun and others},
   year={2025},
+  note={Paper under review},
   url={https://github.com/haunjo/Carla-OpenLane}
 }
 
