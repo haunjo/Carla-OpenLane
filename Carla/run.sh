@@ -1,8 +1,43 @@
 #!/bin/bash
+# Usage:
+#   ./run.sh [--subset A|B] [--split train|val] [Town01 Town03 ...]
+#
+#   --subset A  : Argoverse2 setup (7 cameras, data_capture_Argoverse2.py)
+#   --subset B  : nuScenes setup   (6 cameras, data_capture_nuScenes.py)   [default]
+#   --split     : train or val                                              [default: train]
+#
+# Examples:
+#   ./run.sh --subset A --split train Town01 Town03
+#   ./run.sh --subset B --split val
+#   TOWNS="1,3,7,10" ./run.sh --subset A
+
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate carla
 
 SCENES=51
+SUBSET="B"
+SPLIT="train"
+
+# Parse --subset and --split before town args
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --subset) SUBSET="$2"; shift 2 ;;
+        --split)  SPLIT="$2";  shift 2 ;;
+        *) POSITIONAL+=("$1"); shift ;;
+    esac
+done
+set -- "${POSITIONAL[@]}"
+
+SUBSET="${SUBSET^^}"   # uppercase: A or B
+if [[ "$SUBSET" == "A" ]]; then
+    CAPTURE_SCRIPT="./data_capture_Argoverse2.py"
+else
+    CAPTURE_SCRIPT="./data_capture_nuScenes.py"
+fi
+OUTPUT_DIR="subset_${SUBSET}/${SPLIT}"
+
+echo "Subset: ${SUBSET}  |  Split: ${SPLIT}  |  Script: ${CAPTURE_SCRIPT}  |  Output: ${OUTPUT_DIR}"
 
 # CARLA Weather Presets (17개)
 WEATHER_PRESETS=(
@@ -64,8 +99,7 @@ build_town_list() {
     echo "${out[@]}"
 }
 
-if [[ $# -gt 0 ]]; then
-    # 스크립트 인자로 Town 선택
+if [[ ${#POSITIONAL[@]} -gt 0 ]] || [[ $# -gt 0 ]]; then
     read -ra SELECTED_TOWNS <<< "$(build_town_list "$@")"
 elif [[ -n "$TOWNS" ]]; then
     # 환경변수 TOWNS 로 Town 선택
@@ -169,13 +203,13 @@ for TOWN in "${SELECTED_TOWNS[@]}"; do
 
             echo "🌦️  weather=$WEATHER, traffic=$traffic_level, cycle=$i, offset=$offset, town=$TOWN"
             echo "사이클 $i: 데이터 캡처 시작 (offset=$offset, town=$TOWN, weather=$WEATHER)"
-            python ./data_capture_Argoverse2.py \
+            python $CAPTURE_SCRIPT \
                 --scene $SCENES \
                 --sample 5 \
                 --spawn-offset $offset \
                 --traffic-level $traffic_level \
                 --weather "$WEATHER" \
-                --dir val \
+                --dir "$OUTPUT_DIR" \
                 --pose-format openlanev2
             echo "사이클 $i: 데이터 캡처 완료"
             echo "사이클 $i 끝!"

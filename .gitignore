@@ -40,8 +40,13 @@ Thumbs.db
 *.pdf
 *.docx
 *.tex
+*.bst
+*.sty
+*.bib
 DEVELOPMENT_NOTES.md
 README_UPDATES.md
+doc/
+
 
 # =============================================================================
 # Heavy data & model binaries
@@ -55,81 +60,34 @@ datasets/*.tar.gz
 datasets/*.zip
 
 # =============================================================================
-# Carla/ — generated & captured data
+# Carla/ — internal symlinks and generated data
 # =============================================================================
-Carla/Carla-OpenLane/
+Carla/Carla-OpenLane
 Carla/scripts/town_visualizations_train/
 Carla/scripts/town_visualizations_val/
 Carla/scripts/town*_hd_map_data.json
 
 # =============================================================================
-# Baseline models — heavy training outputs & data
+# Internal Claude instructions
 # =============================================================================
-LaneSegNet/work_dirs/
-LaneSegNet/checkpoints/
-LaneSegNet/ckpts/
-LaneSegNet/data/
-LaneSegNet/lanesegnet_*/
-LaneSegNet/outs/
-LaneSegNet/results_adapter/
-LaneSegNet/features/
-LaneSegNet/archive/
-LaneSegNet/scale_logs/
-LaneSegNet/figures/
-LaneSegNet/fig/
-LaneSegNet/image/
-LaneSegNet/demo_output/
-LaneSegNet/.venv_siglip/
-LaneSegNet/.mim/
-
-TopoLogic/work_dirs/
-TopoLogic/checkpoints/
-TopoLogic/ckpts/
-TopoLogic/data/
-TopoLogic/figs/
-TopoLogic/.mim/
-
-TopoNet/work_dirs/
-TopoNet/checkpoints/
-TopoNet/ckpts/
-TopoNet/data/
-TopoNet/figs/
-TopoNet/.mim/
+CLAUDE.md
+**/CLAUDE.md
 
 # =============================================================================
-# Baseline models — ad-hoc scripts & output files in LaneSegNet root
+# Baseline models — not distributed with dataset repo
+# Users obtain these from their original repositories:
+#   LaneSegNet  : https://github.com/OpenDriveLab/LaneSegNet
+#   TopoLogic   : https://github.com/OpenDriveLab/TopoLogic
+#   TopoNet     : https://github.com/OpenDriveLab/TopoNet
 # =============================================================================
-LaneSegNet/analyze_*.py
-LaneSegNet/check_*.py
-LaneSegNet/compare_*.py
-LaneSegNet/find_*.py
-LaneSegNet/fix_*.py
-LaneSegNet/inspect_*.py
-LaneSegNet/plot_*.py
-LaneSegNet/show_*.py
-LaneSegNet/verify_*.py
-LaneSegNet/update_*.py
-LaneSegNet/add_*.py
-LaneSegNet/move_*.py
-LaneSegNet/deep_*.py
-LaneSegNet/debug_*.py
-LaneSegNet/test_*.py
-LaneSegNet/create_carla_*.py
-LaneSegNet/train_simple_*.py
-LaneSegNet/clean_adapter_*.py
-LaneSegNet/run_*.sh
-LaneSegNet/quick_*.sh
-LaneSegNet/test_*.sh
-LaneSegNet/*.json
-LaneSegNet/*.pt
-LaneSegNet/*.pth
-LaneSegNet/*.pdf
-LaneSegNet/*.txt
-LaneSegNet/*.png
-LaneSegNet/*.jpg
-LaneSegNet/script/
-LaneSegNet/scripts/
-LaneSegNet/doc/
+LaneSegNet/
+TopoLogic/
+TopoNet/
+
+# =============================================================================
+# Internal dev scripts (absolute paths, not for distribution)
+# =============================================================================
+scripts/repair_subset_B_lste.py
 
 # =============================================================================
 # Exceptions — always track these
@@ -141,6 +99,3 @@ LaneSegNet/doc/
 datasets/statistics/scene_distribution_charts/
 !Carla/openlane_v2_subset_A.json
 !Carla/openlane_v2_subset_B.json
-!LaneSegNet/requirements.txt
-!TopoLogic/requirements.txt
-!TopoNet/requirements.txt

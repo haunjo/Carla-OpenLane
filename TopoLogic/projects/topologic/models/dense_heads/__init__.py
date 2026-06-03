@@ -1,3 +1,0 @@
-from .topologic_head import TopoLogicHead
-from .deformable_detr_head import CustomDeformableDETRHead
-from .relationship_head import SingleLayerRelationshipHead
