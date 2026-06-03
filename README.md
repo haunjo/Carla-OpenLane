@@ -77,6 +77,8 @@ python tools/data_process.py
 
 ## Dataset
 
+![Carla-OpenLane sample frames with lane topology annotations](docs/figs/fig03.png)
+
 ### Available Subsets
 
 | Subset | Scenes | Cameras | Resolution | Size | Download |
@@ -93,6 +95,8 @@ python tools/data_process.py
 - **Avg traffic elements:** 3.2 (lights + signs)
 - **Intersection frames:** 18.5%
 - **Towns:** Town01, Town03, Town10
+
+![Environmental diversity across weather, time-of-day, and CARLA towns](docs/figs/carla_distribution.png)
 
 **Detailed specification:** [docs/DATASET.md](docs/DATASET.md)
 
@@ -176,6 +180,8 @@ bash OpenLane-V2-HDmap-Converter/docker/run_docker.sh --dataset /path/to/Carla-O
 python3 src/carla2openlanev2.py --split train
 python3 src/carla2openlanev2.py --split val
 ```
+
+![Annotation pipeline: CARLA logs + OpenDRIVE → Lanelet2 map → topology annotations](docs/figs/annotation_pipeline.png)
 
 **Annotation tool features:**
 - Automatic map conversion (OpenDRIVE → Lanelet2)
