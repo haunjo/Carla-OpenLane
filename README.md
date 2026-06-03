@@ -61,13 +61,12 @@ cd Carla
 ./run.sh
 #    See docs/FULL_WORKFLOW.md for full data generation guide
 
-# 2. Annotate with OpenLane-V2-HDmap-Converter
-git clone https://github.com/haunjo/OpenLane-V2-HDmap-Converter.git
-cd OpenLane-V2-HDmap-Converter
-# Follow annotation guide in that repository
+# 2. Download annotation tool
+./scripts/download_dataset.sh --converter-only
+#    Then follow the Docker setup in OpenLane-V2-HDmap-Converter/docker/DOCKER_DISTRIBUTION.md
 
 # 3. Preprocess and train
-cd ../LaneSegNet
+cd LaneSegNet
 python tools/data_process.py
 ./tools/dist_train.sh 4
 ```
@@ -103,52 +102,38 @@ python tools/data_process.py
 
 ```
 Carla-OpenLane/
-├── Carla/                        # CARLA data collection
-│   ├── data_capture_Argoverse2.py  # 7-camera capture script (Subset A)
-│   ├── data_capture_nuScenes.py    # 6-camera capture script (Subset B)
-│   ├── run.sh                      # Orchestration script (multi-town/weather)
+├── Carla/                          # CARLA data collection
+│   ├── data_capture_Argoverse2.py  # 7-camera capture (Subset A)
+│   ├── data_capture_nuScenes.py    # 6-camera capture (Subset B)
+│   ├── run.sh                      # Orchestration (multi-town/weather)
 │   ├── clean_carla.sh              # Kill CARLA processes
-│   ├── openlane_v2_subset_A/B.json # Output annotation templates
-│   ├── Carla-OpenLane/             # Captured dataset (train/val images + JSON)
+│   ├── openlane_v2_subset_A.json   # Annotation schema (Subset A)
+│   ├── openlane_v2_subset_B.json   # Annotation schema (Subset B)
 │   └── scripts/                    # HD map visualization tools
-├── LaneSegNet/                   # LaneSegNet baseline (based on OpenDriveLab/LaneSegNet)
-│   ├── projects/                   # Model code (bevformer, lanesegnet)
-│   │   └── configs/                # Training configs (CARLA, OpenLane-V2)
-│   ├── tools/                      # train.py, test.py, data_process.py
-│   │   ├── dist_train.sh           # Distributed training launcher
-│   │   └── dist_test.sh            # Distributed evaluation launcher
-│   ├── data/                       # Symlinks to actual datasets
-│   ├── checkpoints/                # Pre-trained checkpoints (gitignored)
-│   ├── work_dirs/                  # Training outputs (gitignored)
-│   └── CLAUDE.md                   # Architecture & experiment notes
-├── TopoLogic/                    # TopoLogic baseline (based on Franpin/TopoLogic)
-│   ├── projects/                   # Model code (bevformer, topologic)
-│   │   └── configs/                # Training configs
-│   ├── tools/                      # dist_train.sh, dist_test.sh, train.py, test.py
-│   ├── openlanev2/                 # Custom OpenLane-V2 utilities
-│   ├── data/                       # Symlinks to actual datasets (gitignored)
-│   ├── work_dirs/                  # Training outputs (gitignored)
-│   └── CLAUDE.md                   # Architecture & experiment notes
-├── TopoNet/                      # TopoNet baseline (based on OpenDriveLab/TopoNet)
-│   ├── projects/                   # Model code (bevformer, toponet)
-│   │   └── configs/                # Training configs
-│   ├── tools/                      # dist_train.sh, dist_test.sh, train.py, test.py
-│   ├── data/                       # Symlinks to actual datasets (gitignored)
-│   └── work_dirs/                  # Training outputs (gitignored)
 ├── datasets/
-│   ├── splits/                     # Train/val split manifests
-│   └── statistics/                 # Scene distribution stats and charts
+│   ├── splits/                     # Train/val split manifests (tracked)
+│   └── statistics/                 # Scene distribution stats (tracked)
 ├── docs/
 │   ├── FULL_WORKFLOW.md            # End-to-end pipeline guide
-│   ├── ANNOTATION.md               # OpenLane-V2-HDmap-Converter usage
-│   └── DATASET.md                  # Dataset format and specification
-├── scripts/
-│   ├── download_dataset.sh         # Download pre-generated dataset
-│   ├── analyze_scene_distribution.py
-│   └── copy_val_to_train.py
-└── tools/
-    └── data-generation/            # Reference scripts for data generation
+│   ├── ANNOTATION.md               # Annotation tool usage
+│   ├── DATASET.md                  # Dataset format and specification
+│   └── RELEASE_GUIDE.md            # Maintainer release instructions
+└── scripts/
+    ├── download_dataset.sh         # Download dataset + annotation tool
+    └── analyze_scene_distribution.py
+
+OpenLane-V2-HDmap-Converter/        # Downloaded via download_dataset.sh
+├── src/
+│   ├── carla2openlanev2.py         # Main converter pipeline
+│   ├── repair_lste.py              # Repair topology_lste annotations
+│   └── checksum.py                 # Integrity validation
+└── docker/
+    ├── run_docker.sh               # Launch annotation container
+    └── DOCKER_DISTRIBUTION.md     # Docker image setup guide
 ```
+
+> **Baseline models** (LaneSegNet, TopoLogic, TopoNet) are not distributed here.
+> Obtain them from their original repositories and place under `LaneSegNet/`, `TopoLogic/`, `TopoNet/`.
 
 ---
 
@@ -173,29 +158,30 @@ Carla-OpenLane/
 
 ## Data Annotation
 
-We use **[OpenLane-V2-HDmap-Converter](https://github.com/haunjo/OpenLane-V2-HDmap-Converter)** (separate repository) to annotate CARLA data.
+We use **OpenLane-V2-HDmap-Converter** to annotate raw CARLA data into OpenLane-V2 format.
+The tool is distributed as a release asset (not a separate repo).
 
 ### Quick Annotation
 
 ```bash
-# Clone annotation tool
-git clone https://github.com/haunjo/OpenLane-V2-HDmap-Converter.git
-cd OpenLane-V2-HDmap-Converter
+# 1. Download annotation tool
+./scripts/download_dataset.sh --converter-only
 
-# Download Docker image
-# [Download link in annotation tool README]
+# 2. Set up Docker image (see OpenLane-V2-HDmap-Converter/docker/DOCKER_DISTRIBUTION.md)
+docker pull haunjo/lanelet2:latest  # requires access — contact maintainer
 
-# Run annotation
-docker/run_docker.sh
+# 3. Run annotation
+bash OpenLane-V2-HDmap-Converter/docker/run_docker.sh --dataset /path/to/Carla-OpenLane
 # Inside container:
-scripts/annotation.sh --split train --subset argoverse2 --task segment
+python3 src/carla2openlanev2.py --split train
+python3 src/carla2openlanev2.py --split val
 ```
 
 **Annotation tool features:**
 - Automatic map conversion (OpenDRIVE → Lanelet2)
 - Lane segment extraction with camera visibility filtering
 - Topology matrix generation (lane-to-lane, lane-to-traffic)
-- Validation and quality checks
+- Targeted repair of traffic element associations (`repair_lste.py`)
 
 **Full guide:** [docs/ANNOTATION.md](docs/ANNOTATION.md)
 
@@ -205,10 +191,9 @@ scripts/annotation.sh --split train --subset argoverse2 --task segment
 
 ### Supported Models
 
-- **LaneSegNet** (included in `LaneSegNet/`, based on [OpenDriveLab/LaneSegNet](https://github.com/OpenDriveLab/LaneSegNet))
-- **TopoLogic** (included in `TopoLogic/`, based on [Franpin/TopoLogic](https://github.com/Franpin/TopoLogic))
-- **TopoNet** (included in `TopoNet/`, based on [OpenDriveLab/TopoNet](https://github.com/OpenDriveLab/TopoNet))
-- **Custom models** (use our dataloader)
+- **[LaneSegNet](https://github.com/OpenDriveLab/LaneSegNet)** — clone to `LaneSegNet/`
+- **[TopoLogic](https://github.com/Franpin/TopoLogic)** — clone to `TopoLogic/`
+- **[TopoNet](https://github.com/OpenDriveLab/TopoNet)** — clone to `TopoNet/`
 
 ### Training LaneSegNet
 
@@ -240,7 +225,7 @@ cd LaneSegNet
 ./tools/dist_test.sh 4 --show
 ```
 
-**Detailed training notes and experiment history:** [LaneSegNet/CLAUDE.md](LaneSegNet/CLAUDE.md)
+See [LaneSegNet](https://github.com/OpenDriveLab/LaneSegNet) for detailed training documentation.
 
 ---
 
@@ -251,7 +236,7 @@ cd LaneSegNet
 | [FULL_WORKFLOW.md](docs/FULL_WORKFLOW.md) | Complete pipeline from data generation to training |
 | [ANNOTATION.md](docs/ANNOTATION.md) | How to use OpenLane-V2-HDmap-Converter |
 | [DATASET.md](docs/DATASET.md) | Dataset format, statistics, and download |
-| [LaneSegNet/CLAUDE.md](LaneSegNet/CLAUDE.md) | Model architecture, configs, and experiment log |
+| [RELEASE_GUIDE.md](docs/RELEASE_GUIDE.md) | Maintainer guide for cutting releases |
 
 ---
 
