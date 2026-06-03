@@ -126,54 +126,67 @@ datasets/raw/
 
 Use the **OpenLane-V2-HDmap-Converter** tool to convert raw CARLA data into OpenLane-V2 format.
 
-### 2.1 Quick Setup
+### 2.1 Download the Annotation Tool
+
+The converter is distributed as a release asset (source only; Docker image is separate):
 
 ```bash
-# Clone annotation tool (separate repository)
-git clone https://github.com/haunjo/OpenLane-V2-HDmap-Converter.git
-cd OpenLane-V2-HDmap-Converter
+# Download via setup script (recommended)
+./scripts/download_dataset.sh --converter-only
 
-# Download and load Docker image
-# [Download OLV2xHDmap.tar from Google Drive]
-docker load -i OLV2xHDmap.tar
+# Or download manually from the Releases page and unzip:
+# https://github.com/haunjo/Carla-OpenLane/releases
+unzip OpenLane-V2-HDmap-Converter-v1.0.zip -d OpenLane-V2-HDmap-Converter
 ```
 
-### 2.2 Configure Dataset Path
+### 2.2 Download and Load the Docker Image
 
-Edit `docker/run_docker.sh`:
+The Docker image (`haunjo/lanelet2:latest`, ~15 GB) contains the full Lanelet2 + ROS environment.
 
 ```bash
-DATASET=/path/to/Carla-OpenLane/datasets/raw
+# Option A — Docker Hub (requires read access, contact maintainer)
+docker login
+docker pull haunjo/lanelet2:latest
+
+# Option B — tar file from Google Drive
+# Download lanelet2.tar.gz, then:
+docker load < lanelet2.tar.gz
 ```
 
-### 2.3 Run Annotation
+See `OpenLane-V2-HDmap-Converter/docker/DOCKER_DISTRIBUTION.md` for details.
+
+### 2.3 Run the Docker Container
 
 ```bash
-cd docker
-./run_docker.sh
-
-# Inside container:
-cd /home/developer/workspace/scripts
-./annotation.sh --split train --subset argoverse2 --task segment
+bash OpenLane-V2-HDmap-Converter/docker/run_docker.sh \
+  --dataset /path/to/Carla-OpenLane
 ```
 
-**Parameters:**
-- `--split train`: Process training data
-- `--subset argoverse2`: Scenes 0-199 (or `nuscenes` for 1000-1199)
-- `--task segment`: Full annotation (or `centerline` for lightweight)
+This mounts the dataset and source code into the container automatically.
 
-**Output:** `datasets/raw/{split}/{scene}/info/{frame}-ls.json`
-
-### 2.4 Validate Annotations
+### 2.4 Run Annotation (inside container)
 
 ```bash
-# Exit Docker
-exit
+# Inside the Docker container:
+cd /home/developer/workspace/projects
 
-# Run validation
-python OpenLane-V2-HDmap-Converter/src/checksum.py \
-  --root datasets/raw/train \
-  --root datasets/raw/val
+# Full annotation — all frames
+python3 src/carla2openlanev2.py --split train
+python3 src/carla2openlanev2.py --split val
+
+# Repair only — re-annotate frames with traffic element associations
+python3 src/repair_lste.py --split train
+python3 src/repair_lste.py --split val
+```
+
+**Output:** `Carla-OpenLane/{split}/{scene}/info/{frame}-ls.json`
+
+### 2.5 Validate Annotations
+
+```bash
+# Inside the Docker container:
+python3 src/checksum.py --root Carla-OpenLane/train
+python3 src/checksum.py --root Carla-OpenLane/val
 ```
 
 **Detailed guide:** [docs/ANNOTATION.md](ANNOTATION.md)
@@ -281,12 +294,12 @@ python tools/test.py \
 If you want to skip Steps 1-2:
 
 ```bash
-# 1. Clone main repository
+# 1. Clone repository
 git clone https://github.com/haunjo/Carla-OpenLane.git
 cd Carla-OpenLane
 
-# 2. Download pre-annotated dataset
-./scripts/download_dataset.sh
+# 2. Download pre-annotated dataset (Subset B recommended)
+./scripts/download_dataset.sh --subset B
 
 # 3. Generate PKL files
 cd LaneSegNet/data
@@ -302,30 +315,30 @@ cd ..
 ## Directory Structure Reference
 
 ```
-Carla-OpenLane/
+Carla-OpenLane/                        # This repository
+├── Carla/                             # CARLA data collection scripts
+│   ├── run.sh
+│   ├── data_capture_Argoverse2.py
+│   └── data_capture_nuScenes.py
 ├── datasets/
-│   ├── raw/                      # CARLA raw data (Step 1 output)
-│   ├── splits/                   # Train/val/test splits (Step 3)
-│   └── statistics/               # Dataset statistics
-├── models/
-│   └── LaneSegNet/               # Model training code
+│   ├── splits/                        # Train/val split manifests (tracked)
+│   └── statistics/                    # Scene distribution stats (tracked)
 ├── scripts/
-│   ├── download_dataset.sh       # Download pre-generated data
-│   ├── generate_splits.py        # Create train/val splits
+│   ├── download_dataset.sh            # Download dataset + annotation tool
 │   └── analyze_scene_distribution.py
-├── tools/
-│   └── data-generation/          # CARLA data generation reference
 └── docs/
-    ├── FULL_WORKFLOW.md          # This file
-    ├── ANNOTATION.md             # Annotation details
-    └── DATASET.md                # Dataset specification
+    ├── FULL_WORKFLOW.md               # This file
+    ├── ANNOTATION.md                  # Annotation details
+    └── DATASET.md                     # Dataset specification
 
-OpenLane-V2-HDmap-Converter/      # Separate annotation tool repo
+OpenLane-V2-HDmap-Converter/           # Downloaded via download_dataset.sh
 ├── src/
-│   ├── carla2openlanev2.py
-│   └── checksum.py
-├── docker/
-└── scripts/
+│   ├── carla2openlanev2.py            # Main converter pipeline
+│   ├── repair_lste.py                 # Re-annotate topology_lste only
+│   └── checksum.py                    # Integrity validation
+└── docker/
+    ├── run_docker.sh                  # Launch annotation container
+    └── DOCKER_DISTRIBUTION.md        # Docker image setup guide
 ```
 
 ---
