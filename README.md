@@ -77,6 +77,8 @@ python tools/data_process.py
 
 ## Dataset
 
+![Carla-OpenLane Subset-A teaser: 7-camera surround view with lane topology annotations](docs/figs/teaser_subsetA.gif)
+
 ![Carla-OpenLane sample frames with lane topology annotations](docs/figs/fig03.png)
 
 ### Available Subsets
