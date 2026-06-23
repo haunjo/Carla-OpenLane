@@ -20,8 +20,8 @@ This document describes the structure, format, and usage of the Carla-OpenLane d
 
 | Subset | Scenes | Frames | Camera Setup | Resolution | Towns | Link |
 |--------|--------|--------|--------------|------------|-------|------|
-| **Subset A** | 200 | ~6000 | ArgoVerse2 (7 cams) | 2048×1550 (front), varied | 01,03,10 | [Download](#download) |
-| **Subset B** | 200 | ~6000 | nuScenes (6 cams) | 1600×900 | 01,03,10 | [Download](#download) |
+| **Subset A** | 790 (729 train / 61 val) | ~15,800 | ArgoVerse2 (7 cams) | 2048×1550 (front), varied | 01,03,04,05,06,07,10 | [Download](#download) |
+| **Subset B** | 634 (498 train / 136 val) | ~12,680 | nuScenes (6 cams) | 1600×900 | 01,03,04,05,06,07,10 | [Download](#download) |
 
 ---
 
@@ -232,25 +232,25 @@ u, v = K @ p_cam / p_cam[2]
 
 | Metric | Value |
 |--------|-------|
-| Scenes | 200 (ID: 0000-0199) |
-| Frames per scene | ~30 |
-| Total frames | ~6000 |
+| Scenes | 790 (729 train / 61 val) |
+| Frames per scene | ~20 |
+| Total frames | ~15,800 |
 | Avg lanes per frame | 26.3 |
 | Avg traffic elements per frame | 3.2 |
 | Intersection frames | 18.5% |
-| Towns | Town01, Town03, Town10 |
+| Towns | Town01, Town03, Town04, Town05, Town06, Town07, Town10 |
 
 ### Subset B (nuScenes)
 
 | Metric | Value |
 |--------|-------|
-| Scenes | 200 (ID: 1000-1199) |
-| Frames per scene | ~30 |
-| Total frames | ~6000 |
+| Scenes | 634 (498 train / 136 val) |
+| Frames per scene | ~20 |
+| Total frames | ~12,680 |
 | Avg lanes per frame | 24.1 |
 | Avg traffic elements per frame | 2.9 |
 | Intersection frames | 16.2% |
-| Towns | Town01, Town03, Town10 |
+| Towns | Town01, Town03, Town04, Town05, Town06, Town07, Town10 |
 
 ---
 
@@ -392,28 +392,6 @@ python src/checksum.py \
 4. **Town10:** Complex intersections may have incomplete topology
 
 **Workaround:** Filter problematic scenes using `datasets/statistics/invalid_scenes.txt`
-
----
-
-## Citation
-
-If you use this dataset, please cite:
-
-```bibtex
-@misc{carla-openlane2025,
-  title={Carla-OpenLane: A Synthetic Dataset for 3D Lane Topology Detection},
-  author={Haunjo Jo, et al.},
-  year={2025},
-  url={https://github.com/haunjo/Carla-OpenLane}
-}
-
-@inproceedings{openlanev2,
-  title={OpenLane-V2: A Topology Reasoning Benchmark for Unified 3D HD Mapping},
-  author={Wang, Huijie and others},
-  booktitle={NeurIPS},
-  year={2023}
-}
-```
 
 ---
 
