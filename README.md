@@ -31,15 +31,15 @@ Validation results on OpenLane-V2 (with vs. without CARLA-OpenLane pre-training)
 
 **Subset A — LaneSegNet (lane segment, OLUS)**
 
-| Method | DET$_\ell$ | DET$_t$ | DET$_a$ | TOP$_{\ell\ell}$ | TOP$_{\ell t}$ | OLUS |
-|--------|-----------|---------|---------|-----------------|----------------|------|
+| Method | DET_ℓ | DET_t | DET_a | TOP_ℓℓ | TOP_ℓt | OLUS |
+|--------|-------|-------|-------|--------|--------|------|
 | LaneSegNet · Real-only | 30.3 | 24.9 | 20.1 | 25.3 | 18.0 | 33.6 |
 | LaneSegNet · w/ CARLA-OpenLane | **32.7** | **35.3** | **23.1** | **28.0** | **21.8** | **38.2** |
 
 **Subset B — TopoNet & TopoLogic (centerline, OLS)**
 
-| Method | DET$_\ell$ | DET$_t$ | TOP$_{\ell\ell}$ | TOP$_{\ell t}$ | OLS |
-|--------|-----------|---------|-----------------|----------------|-----|
+| Method | DET_ℓ | DET_t | TOP_ℓℓ | TOP_ℓt | OLS |
+|--------|-------|-------|--------|--------|-----|
 | TopoNet · Real-only | 20.9 | 45.2 | 4.2 | 11.5 | 30.1 |
 | TopoNet · w/ CARLA-OpenLane | **27.5** | **51.6** | **10.6** | **17.8** | **38.5** |
 | TopoLogic · Real-only | 23.4 | 42.9 | 19.1 | 14.0 | 36.9 |
@@ -89,24 +89,24 @@ python data_capture_nuScenes.py --scene 15 --sample 10 --spawn-offset 0 \
 
 Converts raw CARLA data (images + JSON metadata + OpenDRIVE maps) into OpenLane-V2 format using the **OpenLane-V2-HDmap-Converter** tool.
 
+**Downloads:**
+- Annotation tool: [OpenLane-V2-HDmap-Converter-v1.0.zip](https://github.com/haunjo/Carla-OpenLane/releases/download/v1.0/OpenLane-V2-HDmap-Converter-v1.0.zip)
+- Docker image (~15 GB): [Google Drive](https://drive.google.com/file/d/YOUR_DOCKER_IMAGE_LINK)
+
 ```bash
-# Download annotation tool from the Releases page and unzip
+# 1. Unzip annotation tool
 unzip OpenLane-V2-HDmap-Converter-v1.0.zip -d OpenLane-V2-HDmap-Converter
 
-# Pull Docker image (~15 GB, contains Lanelet2 + ROS environment)
-docker pull haunjo/lanelet2:latest
+# 2. Load Docker image
+docker load < lanelet2.tar.gz
 
-# Launch container
+# 3. Launch container
 bash OpenLane-V2-HDmap-Converter/docker/run_docker.sh \
   --dataset /path/to/Carla-OpenLane
 
 # Inside container: run annotation
 python3 src/carla2openlanev2.py --split train
 python3 src/carla2openlanev2.py --split val
-
-# Optional: repair lane-traffic topology associations
-python3 src/repair_lste.py --split train
-python3 src/repair_lste.py --split val
 
 # Validate
 python3 src/checksum.py --root Carla-OpenLane/train
@@ -199,7 +199,6 @@ Carla-OpenLane/
 OpenLane-V2-HDmap-Converter/        # Downloaded separately (see Annotation)
 ├── src/
 │   ├── carla2openlanev2.py         # Main converter
-│   ├── repair_lste.py              # Topology repair
 │   └── checksum.py                 # Integrity validation
 └── docker/
     └── run_docker.sh               # Container launcher

@@ -37,14 +37,14 @@ cd OpenLane-V2-HDmap-Converter
 
 ### Step 2: Download Docker Image
 
-Download the pre-built Docker image (\~6GB):
+Download the pre-built Docker image (~15 GB):
 
-**[📦 Download OLV2xHDmap.tar](https://drive.google.com/file/d/YOUR_DOCKER_IMAGE_LINK)**
+**[📦 Download lanelet2.tar.gz (Google Drive)](https://drive.google.com/file/d/YOUR_DOCKER_IMAGE_LINK)**
 
 ### Step 3: Load Docker Image
 
 ```bash
-docker load -i OLV2xHDmap.tar
+docker load < lanelet2.tar.gz
 docker images  # Verify image loaded
 ```
 
