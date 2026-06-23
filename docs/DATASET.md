@@ -260,18 +260,11 @@ u, v = K @ p_cam / p_cam[2]
 
 **Subset A (ArgoVerse2):**
 - Size: ~36GB compressed
-- [📦 Download from Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_A_LINK)
+- [📦 Download from Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_A_LINK) (will be available)
 
 **Subset B (nuScenes):**
 - Size: ~32GB compressed
-- [📦 Download from Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_B_LINK)
-
-### Using Download Script
-
-```bash
-cd Carla-OpenLane
-./scripts/download_dataset.sh --subset A  # or B
-```
+- [📦 Download from Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_B_LINK) (will be available)
 
 ---
 

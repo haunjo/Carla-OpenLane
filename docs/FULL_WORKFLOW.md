@@ -58,16 +58,11 @@ Step 4: Model Training (LaneSegNet)
 
 **Skip this step** if you want to use our pre-annotated dataset.
 
-Download the dataset:
-
-```bash
-cd Carla-OpenLane
-./scripts/download_dataset.sh
-```
+Download the dataset from the links in [README.md](../README.md#dataset).
 
 **Available datasets:**
-- **Carla-OpenLane-subset-A** (\~36GB): 200 scenes, ArgoVerse2 camera setup
-- **Carla-OpenLane-subset-B**: 200 scenes, nuScenes camera setup
+- **Carla-OpenLane-subset-A-38k** (~29 GB): 790 scenes, ArgoVerse2 camera setup
+- **Carla-OpenLane-subset-B-59k** (~28 GB): 634 scenes, nuScenes camera setup
 
 ### Option B: Generate Custom Data from CARLA
 
@@ -131,29 +126,20 @@ Use the **OpenLane-V2-HDmap-Converter** tool to convert raw CARLA data into Open
 The converter is distributed as a release asset (source only; Docker image is separate):
 
 ```bash
-# Download via setup script (recommended)
-./scripts/download_dataset.sh --converter-only
-
-# Or download manually from the Releases page and unzip:
+# Download from the Releases page and unzip:
 # https://github.com/haunjo/Carla-OpenLane/releases
 unzip OpenLane-V2-HDmap-Converter-v1.0.zip -d OpenLane-V2-HDmap-Converter
 ```
 
 ### 2.2 Download and Load the Docker Image
 
-The Docker image (`haunjo/lanelet2:latest`, ~15 GB) contains the full Lanelet2 + ROS environment.
+The Docker image (~15 GB) contains the full Lanelet2 + ROS environment.
+
+Download `lanelet2.tar.gz` from [Google Drive](https://drive.google.com/file/d/YOUR_DOCKER_IMAGE_LINK), then:
 
 ```bash
-# Option A — Docker Hub (requires read access, contact maintainer)
-docker login
-docker pull haunjo/lanelet2:latest
-
-# Option B — tar file from Google Drive
-# Download lanelet2.tar.gz, then:
 docker load < lanelet2.tar.gz
 ```
-
-See `OpenLane-V2-HDmap-Converter/docker/DOCKER_DISTRIBUTION.md` for details.
 
 ### 2.3 Run the Docker Container
 
@@ -173,10 +159,6 @@ cd /home/developer/workspace/projects
 # Full annotation — all frames
 python3 src/carla2openlanev2.py --split train
 python3 src/carla2openlanev2.py --split val
-
-# Repair only — re-annotate frames with traffic element associations
-python3 src/repair_lste.py --split train
-python3 src/repair_lste.py --split val
 ```
 
 **Output:** `Carla-OpenLane/{split}/{scene}/info/{frame}-ls.json`
@@ -298,8 +280,7 @@ If you want to skip Steps 1-2:
 git clone https://github.com/haunjo/Carla-OpenLane.git
 cd Carla-OpenLane
 
-# 2. Download pre-annotated dataset (Subset B recommended)
-./scripts/download_dataset.sh --subset B
+# 2. Download pre-annotated dataset from Google Drive (see README)
 
 # 3. Generate PKL files
 cd LaneSegNet/data
@@ -324,21 +305,18 @@ Carla-OpenLane/                        # This repository
 │   ├── splits/                        # Train/val split manifests (tracked)
 │   └── statistics/                    # Scene distribution stats (tracked)
 ├── scripts/
-│   ├── download_dataset.sh            # Download dataset + annotation tool
 │   └── analyze_scene_distribution.py
 └── docs/
     ├── FULL_WORKFLOW.md               # This file
     ├── ANNOTATION.md                  # Annotation details
     └── DATASET.md                     # Dataset specification
 
-OpenLane-V2-HDmap-Converter/           # Downloaded via download_dataset.sh
+OpenLane-V2-HDmap-Converter/           # Downloaded from Releases page
 ├── src/
 │   ├── carla2openlanev2.py            # Main converter pipeline
-│   ├── repair_lste.py                 # Re-annotate topology_lste only
 │   └── checksum.py                    # Integrity validation
 └── docker/
-    ├── run_docker.sh                  # Launch annotation container
-    └── DOCKER_DISTRIBUTION.md        # Docker image setup guide
+    └── run_docker.sh                  # Launch annotation container
 ```
 
 ---
