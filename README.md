@@ -91,7 +91,7 @@ Converts raw CARLA data (images + JSON metadata + OpenDRIVE maps) into OpenLane-
 
 **Downloads:**
 - Annotation tool: [OpenLane-V2-HDmap-Converter-v1.0.zip](https://github.com/haunjo/Carla-OpenLane/releases/download/v1.0/OpenLane-V2-HDmap-Converter-v1.0.zip)
-- Docker image (~15 GB): [Google Drive](https://drive.google.com/file/d/YOUR_DOCKER_IMAGE_LINK)
+- Docker image (~15 GB): [Google Drive](https://drive.google.com/file/d/1xnnxYKHkksZQpLdBWJCJDwgFpAgrlkv1/view?usp=drive_link)
 
 ```bash
 # 1. Unzip annotation tool
