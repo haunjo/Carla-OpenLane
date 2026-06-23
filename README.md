@@ -20,8 +20,8 @@
 Covers 7 CARLA towns (Town01/03/04/05/06/07/10) across diverse weather and time-of-day conditions.
 
 **Download:** Dataset will be available upon paper acceptance.
-- Subset A (~36 GB): [Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_A_LINK)
-- Subset B (~32 GB): [Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_B_LINK)
+- Subset A (~36 GB): [Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_A_LINK) (will be available soon)
+- Subset B (~32 GB): [Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_B_LINK)(will be available soon)
 
 ---
 
