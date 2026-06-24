@@ -20,8 +20,8 @@
 Covers 7 CARLA towns (Town01/03/04/05/06/07/10) across diverse weather and time-of-day conditions.
 
 **Download:** Dataset will be available upon paper acceptance.
-- Subset A (~36 GB): [Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_A_LINK) (will be available soon)
-- Subset B (~32 GB): [Google Drive](https://drive.google.com/file/d/YOUR_SUBSET_B_LINK)(will be available soon)
+- Subset A (~33 GB): [Google Drive](https://drive.google.com/file/d/1sFHHBTzwX06D-KoMV0ju1ODgVqTGAd5n/view?usp=drive_link)
+- Subset B (~28 GB): [Google Drive](https://drive.google.com/file/d/1OxoTs5za_39dqRu7Zl0Q787S8N9jm-Wl/view?usp=drive_link)
 
 ---
 
@@ -45,6 +45,8 @@ Validation results on OpenLane-V2 (with vs. without CARLA-OpenLane pre-training)
 | TopoLogic · Real-only | 23.4 | 42.9 | 19.1 | 14.0 | 36.9 |
 | TopoLogic · w/ CARLA-OpenLane | **27.5** | **56.1** | **24.0** | **18.2** | **43.8** |
 
+![Performance improvement with CARLA-OpenLane pre-training](docs/experiments/improvement_plot.png)
+
 ---
 
 ## Data Generation
@@ -52,7 +54,12 @@ Validation results on OpenLane-V2 (with vs. without CARLA-OpenLane pre-training)
 Requires CARLA 0.9.15 and the `carla` conda environment.
 
 ```bash
-cd Carla/
+# 1. Start CARLA server
+cd /path/to/CARLA_0.9.15
+./CarlaUE4.sh -RenderOffScreen &
+
+# 2. Run data collection
+cd /path/to/Carla-OpenLane/Carla
 
 # Run all towns with default settings
 ./run.sh
@@ -134,11 +141,16 @@ Two-stage training: pre-train on CARLA-OpenLane, then fine-tune on OpenLane-V2.
 cd LaneSegNet
 pip install -r requirements.txt
 
+# Link dataset (adjust path as needed)
+mkdir -p data
+ln -s /path/to/CARLA-OpenLane-subset-A-38k data/Carla-OpenLane
+
 # Stage 1 — CARLA-OpenLane pre-training (8 epochs, 2 GPUs)
 CONFIG=projects/configs/lanesegnet_r50_1x2_8e_carla_subset_A_mapele_bucket_naive.py
 ./tools/dist_train.sh $CONFIG 2
 
 # Stage 2 — OpenLane-V2 fine-tuning (24 epochs, 8 GPUs)
+# Set load_from in config to Stage 1 checkpoint before running
 CONFIG=projects/configs/lanesegnet_r50_8x1_24e_olv2_subset_A.py
 ./tools/dist_train.sh $CONFIG 8
 
